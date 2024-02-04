@@ -18,26 +18,27 @@ app.get("/balance/:privateKey", (req, res) => {
 
 app.post("/send", (req, res) => {
   const { sender, recipient, amount , message} = req.body;
-  const msgHash = Account.hashMessage(message);
-  console.log(msgHash);
-  recipientAccount = Account.findAccount(recipient);
-  console.log(recipientAccount);
-  const { r, s, recovery } = recipientAccount.signMessage(msgHash);
-  console.log(r)
-  console.log(s)
-  console.log(recovery)
-
-  // const recipientAccount = Account.findAccount(recipient);
-  // if (!recipientAccount) {
-  //   res.status(400).send({ message: "Recipient not found!" });
-  // }
-  // if (senderAccount.getBalance() < amount) {
-  //   res.status(400).send({ message: "Not enough funds!" });
-  // } else {
-  //   senderAccount.updateBalance("send", amount);
-  //   recipientAccount.updateBalance("receive", amount);
-    // res.send({ balance: senderAccount.getBalance() });
-  // }
+  const senderAccount = Account.findAccount(sender);
+  const recipientAccount = Account.findAccount(recipient);
+  if (!senderAccount || !recipientAccount) {
+    res.status(400).send({ message: "Invalid sender or recipient!" });
+  }
+  const msgHash = senderAccount.hashMessage(message);
+  const signature = senderAccount.signMessage(msgHash);
+  const isVerfy = senderAccount.isVerify(signature, msgHash, senderAccount.getAddress());
+  if (isVerfy) {
+    if (senderAccount.getBalance() < amount) {
+      res.status(400).send({ message: "Not enough funds!" });
+    } else {
+      senderAccount.updateBalance("send", amount);
+      recipientAccount.updateBalance("receive", amount);
+      let msg = "You have transferred " + amount + " to " + recipientAccount.getName();
+      res.status(200).send({ balance: senderAccount.getBalance() });
+    }
+  }
+  else {
+    res.status(400).send({ message: "Invalid signature!" });
+  }
 });
 
 app.listen(port, () => {

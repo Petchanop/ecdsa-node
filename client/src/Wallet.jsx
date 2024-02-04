@@ -12,16 +12,20 @@ function Wallet({ address, setAddress, balance, setBalance, privateKey, setPriva
       const address = toHex(publicKey);
       setAddress(address);
       if (address) {
-        const {
-          data: { balance },
-        } = await server.get(`balance/${privateKey}`);
-        setBalance(balance);
-      }
+        try {
+          const {
+            data: { balance },
+          } = await server.get(`balance/${privateKey}`);
+          setBalance(balance);
+        } catch (ex) {
+          alert(ex.response.data.message);
+        }
     }
     else {
       setBalance(0);
     }
   }
+}
 
   return (
     <div className="container wallet">
@@ -32,7 +36,7 @@ function Wallet({ address, setAddress, balance, setBalance, privateKey, setPriva
       </label>
       <label>
         Wallet Address
-        <div className="box">{address.slice(0, 20)}...</div>
+        <div className="box">{address}...</div>
       </label>
 
       <div className="balance">Balance: {balance}</div>

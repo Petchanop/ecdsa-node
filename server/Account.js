@@ -2,25 +2,17 @@ const { secp256k1 } = require("ethereum-cryptography/secp256k1");
 const { keccak256 } = require("ethereum-cryptography/keccak");
 const { utf8ToBytes, toHex } = require("ethereum-cryptography/utils"); 
 
-function hashMessage(message) {
-	const bytes = utf8ToBytes(message);
-    return keccak256(bytes);
-}
-
-function isVerify(message, signature) {
-	return secp256k1.verify(message, signature, this.publicKey);
-}
-
-function  recoverKey(message, signature, recoveryBit) {
-    return secp.recoverPublicKey(hashMessage(message) , signature, recoveryBit)
-}
-
 class Account {
 
 	constructor(name, balance, privateKey) {
 		this.privateKey = privateKey;
+		this.address = toHex(secp256k1.getPublicKey(this.privateKey));
 		this.name = name;
 		this.balance = balance;
+  }
+
+  getName() {
+	return this.name;
   }
 
   getBalance() {
@@ -35,12 +27,21 @@ class Account {
     }
   }
 
+  getAddress() {
+	return this.address;
+  }
+
+  hashMessage(message) {
+	const bytes = utf8ToBytes(message);
+    return keccak256(bytes);
+  }
+
   signMessage(msg){
 	return secp256k1.sign(msg, this.privateKey);
   }
 
-  isVerify(message, signature) {
-	return secp256k1.verify(message, signature, this.publicKey);
+  isVerify(signature, message, publicKey) {
+	return secp256k1.verify(signature, message, publicKey);
   }
 
   recoverKey(message, signature, recoveryBit) {
@@ -63,7 +64,7 @@ Accounts.push(jack);
 Accounts.push(jill);
 
 function findAccount(privateKey) {
-  return Accounts.find((account) => account.privateKey === privateKey);
+  return Accounts.find(((account) => account.privateKey === privateKey)) || Accounts.find(((account) => account.address === privateKey));
 }
 
-module.exports = { Account, Accounts, findAccount, hashMessage, isVerify, recoverKey};
+module.exports = { Account, Accounts, findAccount };
