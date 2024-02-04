@@ -23,9 +23,9 @@ app.post("/send", (req, res) => {
   if (!senderAccount || !recipientAccount) {
     res.status(400).send({ message: "Invalid sender or recipient!" });
   }
-  const msgHash = senderAccount.hashMessage(message);
-  const signature = senderAccount.signMessage(msgHash);
-  const isVerfy = senderAccount.isVerify(signature, msgHash, senderAccount.getAddress());
+  const msgHash = recipientAccount.hashMessage(message);
+  const signature = recipientAccount.signMessage(msgHash);
+  const isVerfy = recipientAccount.isVerify(signature, msgHash, recipient);
   if (isVerfy) {
     if (senderAccount.getBalance() < amount) {
       res.status(400).send({ message: "Not enough funds!" });
