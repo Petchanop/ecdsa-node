@@ -4,12 +4,11 @@ import server from "./server";
 function Transfer({ address, setBalance }) {
   const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState("");
-
+  const [message, setMessage] = useState("");
   const setValue = (setter) => (evt) => setter(evt.target.value);
 
   async function transfer(evt) {
     evt.preventDefault();
-
     try {
       const {
         data: { balance },
@@ -17,6 +16,7 @@ function Transfer({ address, setBalance }) {
         sender: address,
         amount: parseInt(sendAmount),
         recipient,
+        message,
       });
       setBalance(balance);
     } catch (ex) {
@@ -27,7 +27,6 @@ function Transfer({ address, setBalance }) {
   return (
     <form className="container transfer" onSubmit={transfer}>
       <h1>Send Transaction</h1>
-
       <label>
         Send Amount
         <input
@@ -36,7 +35,6 @@ function Transfer({ address, setBalance }) {
           onChange={setValue(setSendAmount)}
         ></input>
       </label>
-
       <label>
         Recipient
         <input
@@ -45,8 +43,15 @@ function Transfer({ address, setBalance }) {
           onChange={setValue(setRecipient)}
         ></input>
       </label>
-
-      <input type="submit" className="button" value="Transfer" />
+      <label>
+        Message
+        <input
+          placeholder="Type a message"
+          value={message}
+          onChange={setValue(setMessage)}
+        ></input>
+      </label>
+      <input type="submit" className="button" value="Transfer"/>
     </form>
   );
 }

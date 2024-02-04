@@ -49,6 +49,15 @@ input {
   font-size: 0.875rem;
 }
 
+.box {
+  padding: 10px 0;
+  border-radius: 0.125rem;
+  border: 1px solid rgb(226, 232, 240);
+  background-color: #fdfdfe;
+  padding-inline-start: 0.75rem;
+  font-size: 0.875rem;
+}
+
 .button {
   background-color: #319795;
   border-radius: 0.125rem;
@@ -83,4 +92,20 @@ input {
 .transfer {
   display: flex;
   flex-direction: column;
+}
+
+.record {
+  display: flex;
+  flex-direction: column;
+
+  .history {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 400;
+    font-size: .9em;
+    display: inline-flex;
+    margin-top: 10px;
+    padding: 0.75rem;
+    background-color: #f4f6f8;
+  }
 }
